@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <!-- Motif "Trace": an M drawn as one motion-graph line, ending in a playhead dot. Ink = currentColor. -->
+  <path d="M10 68 H19.5 C27 68 28.5 29 36 29 C43.5 29 44 55 50 55 C56 55 56.5 29 64 29 C71.5 29 73 68 80.5 68" stroke="currentColor" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="87.5" cy="68" r="6.25" fill="currentColor"/>
+</svg>

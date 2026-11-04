@@ -300,9 +300,10 @@
     };
   };
 
-  /* ---------- brand mark: the app icon's three stacked frames ---------- */
+  /* ---------- brand mark: "Trace", an M drawn as one motion-graph line (assets/brand/mark.svg) ---------- */
 
-  M.mark = (size = 26) => `<img src="${M.asset('icon.png')}" width="${size}" height="${size}" alt="">`;
+  M.mark = (size = 26) =>
+    `<svg class="mark" viewBox="0 0 100 100" width="${size}" height="${size}" fill="none" aria-hidden="true"><path d="M10 68 H19.5 C27 68 28.5 29 36 29 C43.5 29 44 55 50 55 C56 55 56.5 29 64 29 C71.5 29 73 68 80.5 68" stroke="currentColor" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="87.5" cy="68" r="7" fill="currentColor"/></svg>`;
 
   /* ---------- shared close + review switcher ---------- */
 

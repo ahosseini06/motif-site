@@ -74,7 +74,9 @@ html { scrollbar-color: rgba(28, 31, 36, 0.22) transparent; scrollbar-width: thi
   height: 56px;
 }
 .brand { display: inline-flex; align-items: center; gap: 9px; font-weight: 600; font-size: 15px; text-decoration: none; letter-spacing: -0.01em; }
-.brand img { width: 26px; height: 26px; }
+.brand img, .brand .mark { width: 26px; height: 26px; flex: none; }
+.brand .mark { color: var(--accent); }
+[data-theme="dark"] .brand .mark { color: var(--amber); }
 .topbar nav { display: flex; align-items: center; gap: 18px; font-size: 13px; color: var(--text-2); }
 .topbar nav a { text-decoration: none; }
 .topbar nav a:hover { color: var(--text); }

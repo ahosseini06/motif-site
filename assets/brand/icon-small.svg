@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" fill="none">
+  <!-- macOS app icon: 824 px squircle on a 1024 canvas, amber Trace on graphite. -->
+  <defs>
+    <linearGradient id="tile" x1="0" y1="100" x2="0" y2="924" gradientUnits="userSpaceOnUse"><stop stop-color="#30323a"/><stop offset="1" stop-color="#141519"/></linearGradient>
+    <linearGradient id="ink" x1="0" y1="26" x2="0" y2="75" gradientUnits="userSpaceOnUse"><stop stop-color="#ffd27a"/><stop offset="1" stop-color="#ffb52e"/></linearGradient>
+    <filter id="drop" x="-10%" y="-10%" width="120%" height="125%"><feDropShadow dx="0" dy="12" stdDeviation="14" flood-color="#000" flood-opacity="0.32"/></filter>
+  </defs>
+  <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#tile)" filter="url(#drop)"/>
+  <rect x="101.5" y="101.5" width="821" height="821" rx="183.5" stroke="#fff" stroke-opacity="0.08" stroke-width="3"/>
+  <g transform="translate(512 512) scale(6.2) translate(-49 -48.5)">
+    <path d="M10 68 H19.5 C27 68 28.5 29 36 29 C43.5 29 44 55 50 55 C56 55 56.5 29 64 29 C71.5 29 73 68 80.5 68" stroke="url(#ink)" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="87.5" cy="68" r="8.75" fill="url(#ink)"/>
+  </g>
+</svg>
