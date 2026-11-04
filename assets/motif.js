@@ -10,7 +10,7 @@
   const M = (window.Motif = {});
   M.asset = (p) => ASSETS + p;
   M.root = (p) => ROOT + p;
-  M.DMG = ROOT + 'downloads/Motif-0.1.0.dmg';
+  M.DMG = 'https://github.com/ahosseini06/Motif/releases/latest/download/Motif.dmg'; // rebuilt from every push to Motif's main
   M.summary = DATA.summary;
   M.clips = DATA.clips;
   M.byId = Object.fromEntries(DATA.clips.map((c) => [c.id, c]));
