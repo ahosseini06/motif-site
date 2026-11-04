@@ -52,6 +52,7 @@
     'crane-down': '<path d="m7 7 10 10"/><path d="M17 7v10H7"/>',
     focus: '<circle cx="12" cy="12" r="3"/><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/>',
     lock: '<rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+    github: '<path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/>',
     download: '<path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/>',
     search: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
     'text-search': '<path d="M21 6H3"/><path d="M10 12H3"/><path d="M10 18H3"/><circle cx="17" cy="15" r="3"/><path d="m21 19-1.9-1.9"/>',
@@ -307,14 +308,14 @@
 
   /* ---------- shared close + review switcher ---------- */
 
-  M.closer = (title = 'Find the shot by how the camera moves.') => `
+  M.closer = (title = 'Find the shot by how the camera moves.', download = true) => `
     <section class="closer"><div class="wrap">
       <div class="closer-row">
         <h2>${title}</h2>
-        <div class="closer-actions">
+        ${download ? `<div class="closer-actions">
           <a class="btn btn--primary btn--lg" href="${M.DMG}" download>${M.icon('download')}Download for Mac</a>
           <span class="dl-meta">Latest build · free</span>
-        </div>
+        </div>` : ''}
       </div>
       <div class="closer-fine">
         <span><b>Requires</b> macOS 26 on Apple Silicon</span>
@@ -326,7 +327,7 @@
     </div></section>`;
 
   M.mountChrome = () => {
-    document.querySelectorAll('[data-closer]').forEach((el) => (el.outerHTML = M.closer(el.dataset.closer || undefined)));
+    document.querySelectorAll('[data-closer]').forEach((el) => (el.outerHTML = M.closer(el.dataset.closer || undefined, el.dataset.download !== 'false')));
     document.querySelectorAll('[data-mark]').forEach((el) => (el.innerHTML = M.mark(+el.dataset.mark || 26)));
     document.querySelectorAll('[data-icon]').forEach((el) => el.insertAdjacentHTML('afterbegin', M.icon(el.dataset.icon)));
     document.querySelectorAll('a[data-dmg]').forEach((a) => { a.href = M.DMG; a.setAttribute('download', ''); });
