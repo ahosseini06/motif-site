@@ -313,13 +313,14 @@
         <h2>${title}</h2>
         <div class="closer-actions">
           <a class="btn btn--primary btn--lg" href="${M.DMG}" download>${M.icon('download')}Download for Mac</a>
-          <span class="dl-meta">Version 0.1.0 · 5.5 MB</span>
+          <span class="dl-meta">Latest build · free</span>
         </div>
       </div>
       <div class="closer-fine">
         <span><b>Requires</b> macOS 26 on Apple Silicon</span>
         <span><b>First launch</b> System Settings → Privacy &amp; Security → Open Anyway</span>
         <span><b>Descriptions</b> bring your own Gemini key, or keep a project on-device only</span>
+        <span><b>Open source</b> MIT license · <a href="https://github.com/ahosseini06/Motif">source on GitHub</a></span>
         <span>${document.body.dataset.footage || "Footage on this page: Motif's synthetic test renders, with known camera paths"}</span>
       </div>
     </div></section>`;
