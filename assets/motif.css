@@ -236,6 +236,22 @@ button.chip[aria-pressed="true"] { background: var(--accent-wash-2); border-colo
 .closer-fine a { color: var(--text-2); }
 .closer-fine a:hover { color: var(--text); }
 
+/* ---------- site footer ---------- */
+
+.site-foot { margin-top: clamp(48px, 7vw, 96px); border-top: 1px solid var(--hairline); padding: 24px 0 40px; font-size: 13px; color: var(--text-2); }
+.site-foot-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px 24px; }
+.site-foot-by { display: inline-flex; align-items: center; gap: 7px; }
+.site-foot-by .mark { color: var(--accent); }
+.site-foot-by b { font-weight: 600; color: var(--text); }
+.site-foot-links { display: inline-flex; gap: 20px; }
+.site-foot-links a { color: var(--text-2); text-decoration: none; }
+.site-foot-links a:hover { color: var(--text); text-decoration: underline; }
+.site-foot-facts { margin: 22px 0 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px 32px; }
+.site-foot-facts dt { font-size: 11.5px; font-weight: 500; color: var(--text-3); margin-bottom: 3px; }
+.site-foot-facts dd { margin: 0; font-size: 12.5px; line-height: 1.45; color: var(--text-2); max-width: 26em; }
+@media (max-width: 860px) { .site-foot-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 480px) { .site-foot-facts { grid-template-columns: 1fr; } }
+
 /* ---------- idea switcher (review aid, remove before launch) ---------- */
 
 .ideas {

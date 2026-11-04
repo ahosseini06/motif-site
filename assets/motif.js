@@ -326,7 +326,27 @@
       </div>
     </div></section>`;
 
+  /* Site footer: a byline row, then the practical facts in aligned columns. */
+  M.REPO = 'https://github.com/ahosseini06/Motif';
+  M.footer = () => {
+    const facts = [
+      ['Requires', 'macOS 26 on Apple Silicon'],
+      ['First launch', 'System Settings → Privacy &amp; Security → Open Anyway'],
+      ['Descriptions', 'Your own Gemini key, or keep a project on&#8209;device only'],
+      ['Footage', 'Mixkit, free license. Motion measured by Motif.'],
+    ];
+    return `
+    <footer class="site-foot"><div class="wrap">
+      <div class="site-foot-top">
+        <span class="site-foot-by">${M.mark(18)}<b>Motif</b><span>by Ali Hosseini</span></span>
+        <span class="site-foot-links"><a href="${M.REPO}">GitHub</a><a href="${M.REPO}/blob/main/LICENSE">MIT license</a></span>
+      </div>
+      <dl class="site-foot-facts">${facts.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl>
+    </div></footer>`;
+  };
+
   M.mountChrome = () => {
+    document.querySelectorAll('[data-footer]').forEach((el) => (el.outerHTML = M.footer()));
     document.querySelectorAll('[data-closer]').forEach((el) => (el.outerHTML = M.closer(el.dataset.closer || undefined, el.dataset.download !== 'false')));
     document.querySelectorAll('[data-mark]').forEach((el) => (el.innerHTML = M.mark(+el.dataset.mark || 26)));
     document.querySelectorAll('[data-icon]').forEach((el) => el.insertAdjacentHTML('afterbegin', M.icon(el.dataset.icon)));
