@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Motif — Find the perfect shot</title>
+<meta name="description" content="Motif is a Mac app that tags every clip with what's in it and how the camera moves, so you can search your footage by either.">
+<link rel="icon" href="assets/favicon.png">
+<link rel="stylesheet" href="assets/motif.css">
+<style>
+  .hero { min-height: calc(100svh - 56px); display: grid; grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr); gap: 32px clamp(32px, 4vw, 64px); align-items: center; padding: 24px 0 40px; }
+  .pitch { display: grid; gap: 20px; align-content: center; }
+  .pitch .lede { max-width: 24em; }
+  .demo { display: grid; gap: 10px; min-width: 0; }
+  .picker { display: flex; flex-wrap: wrap; gap: 5px; }
+  .panel { background: var(--surface); border: 1px solid var(--hairline); border-radius: 12px; padding: 10px; display: grid; gap: 10px; box-shadow: 0 1px 2px rgba(28, 31, 36, 0.04), 0 28px 56px -36px rgba(28, 31, 36, 0.32); }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .view { position: relative; aspect-ratio: 16 / 9; border-radius: 7px; overflow: hidden; }
+  .view--footage { background: #000; }
+  .view--footage video { width: 100%; height: 100%; object-fit: cover; }
+  .view--set { background: var(--bg); box-shadow: inset 0 0 0 1px var(--hairline); }
+  .view--set canvas { width: 100%; height: 100%; }
+  .tag { position: absolute; left: 8px; top: 7px; font: 600 10.5px/1 var(--sans); padding: 4px 6px; border-radius: 4px; }
+  .view--footage .tag { color: #fff; background: rgba(0, 0, 0, 0.55); }
+  .view--set .tag { color: var(--text-2); background: rgba(255, 255, 255, 0.85); }
+  .legend { position: absolute; right: 8px; bottom: 7px; display: flex; gap: 10px; font-size: 10.5px; color: var(--text-3); }
+  .legend i { display: inline-block; width: 12px; height: 0; vertical-align: 3px; margin-right: 4px; border-top: 2px solid var(--accent); }
+  .legend i.aim { border-top: 2px dashed rgba(94, 106, 210, 0.55); }
+  .bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 12.5px; color: var(--text-2); }
+  .bar .iconbtn { all: unset; cursor: pointer; width: 26px; height: 26px; display: grid; place-items: center; border-radius: 6px; border: 1px solid var(--hairline-strong); background: var(--surface); color: var(--text); }
+  .bar .iconbtn svg { width: 11px; height: 11px; }
+  .bar .iconbtn:focus-visible { outline: 2px solid var(--accent); }
+  .bar .reads { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+  .facts { display: grid; gap: 8px; padding: 2px 2px 0; }
+  .fact { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 12px; align-items: baseline; }
+  .fact-k { font-size: 11.5px; font-weight: 500; color: var(--text-3); }
+  .fact-v.desc { margin: 0; font-size: 14.5px; line-height: 1.4; color: var(--text); min-height: 2.8em; }
+  .fact-v.chips { align-self: center; }
+  #graph { height: 224px; }
+  #picker button[aria-pressed="true"] { background: linear-gradient(90deg, var(--accent-wash-2) var(--p, 100%), rgba(94, 106, 210, 0.04) var(--p, 100%)); }
+  #graph .graph-labels span { font-size: 11px; }
+  @media (max-width: 1020px) { .hero { grid-template-columns: 1fr; min-height: 0; padding-top: 40px; } }
+  @media (max-width: 560px) { .pair { grid-template-columns: 1fr; } .fact { grid-template-columns: 1fr; gap: 4px; } .fact-v.desc { min-height: 0; } }
+</style>
+</head>
+<body data-footage="Footage from Mixkit (free license); motion measured by Motif">
+<!--
+THESIS: proof that Motif detects camera movement: the footage plays beside a 3D set whose camera is driven only by Motif's measurements, leaving a trail.
+OWN-WORLD: Motif Theme; indigo camera, frustum and trail on a hairline floor grid; app chips; the seven-lane motion graph.
+STORY: pick a move → watch the reconstructed camera trace it next to the footage → read the chips → download.
+FIRST VIEWPORT: title, one-line description and Download on the left; the demo panel (picker, footage | set, chips, graph) on the right, all above the fold.
+FORM: 11 — 5 + 8 combined. FINISH: unreviewed and undocumented is unfinished.
+-->
+<header class="wrap topbar">
+  <a class="brand" href="./"><span data-mark="26"></span>Motif</a>
+  <a class="btn btn--sm" data-dmg data-icon="download">Download</a>
+</header>
+
+<main>
+  <section class="wrap hero">
+    <div class="pitch">
+      <h1 class="h-display">Find the perfect shot.</h1>
+      <p class="lede">Search through thousands of shots by content, camera movement, or style, in seconds.</p>
+      <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+        <a class="btn btn--primary btn--lg" data-dmg data-icon="download">Download for Mac</a>
+        <span class="dl-meta">macOS 26 · Apple Silicon</span>
+      </div>
+    </div>
+
+    <div class="demo" aria-label="Camera movement detection demo">
+      <div class="picker" id="picker" role="group" aria-label="Choose a clip"></div>
+      <div class="panel">
+        <div class="pair">
+          <div class="view view--footage"><video id="video" muted playsinline autoplay preload="auto"></video><span class="tag">Footage</span></div>
+          <div class="view view--set"><canvas id="set"></canvas><span class="tag">Camera, as Motif measured it</span>
+            <span class="legend"><span><i></i>path</span><span><i class="aim"></i>aim</span></span></div>
+        </div>
+        <div class="facts">
+          <div class="fact"><span class="fact-k">Described as</span><p class="fact-v desc" id="desc"></p></div>
+          <div class="fact"><span class="fact-k">Measured as</span><span class="fact-v chips" id="reads"></span></div>
+        </div>
+        <div class="bar">
+          <button class="iconbtn" id="play" aria-label="Pause"></button>
+          <span class="num" id="clock">0.00 / 2.5 s</span>
+          <span class="small" id="fname" style="margin-left:auto"></span>
+        </div>
+        <div id="graph"></div>
+      </div>
+    </div>
+  </section>
+
+  <div data-closer="Download Motif for Mac."></div>
+</main>
+
+<script src="assets/data-real.js"></script>
+<script src="assets/motif.js"></script>
+<script>
+  const $ = (s) => document.querySelector(s);
+  const D2R = Math.PI / 180, DEPTH = 10, AIM = 8.5;  // one scene-depth = distance to the middle of the set
+  const PICKS = [['car_arc', 'arc right'], ['rooftop_pan', 'pan right'], ['coast_pullout', 'pull-out'], ['towers_truck', 'truck right'],
+    ['harbour_zoom', 'zoom out'], ['valley_crane', 'crane up'], ['reef_pan', 'pan left'], ['campfire_static', 'static']];
+  const video = $('#video');
+  let clip, poses = [];
+  const SEG = 2.5, RESUME_MS = 12000;          // each clip plays its first 2.5 s; cycling resumes 12 s after the last click
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let auto = !reduce, resumeTimer;
+
+  $('#picker').innerHTML = PICKS.map(([id, label]) =>
+    `<button class="chip" data-id="${id}" aria-pressed="false">${Motif.icon(Motif.chipIcon(label))}${label}</button>`).join('');
+  const graph = Motif.graph($('#graph'), { autoscale: true, lineWidth: 1.6, onScrub: (t) => { manual(); video.pause(); video.currentTime = Math.min(t, SEG); draw(); } });
+
+  /* Integrate the measured 8 Hz rates into a camera pose: rotations in the camera's own frame, translation in scene-depths. */
+  function integrate(rows) {
+    let p = { x: 0, y: 1.4, z: 0, yaw: 0, pitch: -4, roll: 0, zoom: 0 };
+    const out = [{ ...p }];
+    for (const [pan, tilt, roll, zoom, truck, ped, dolly] of rows) {
+      const dt = 1 / 8, yw = p.yaw * D2R;
+      p = { ...p };
+      p.yaw += pan * dt; p.pitch += tilt * dt; p.roll += roll * dt; p.zoom += zoom * dt;
+      p.x += (Math.cos(yw) * truck + Math.sin(yw) * dolly) * DEPTH * dt;
+      p.z += (-Math.sin(yw) * truck + Math.cos(yw) * dolly) * DEPTH * dt;
+      p.y += ped * DEPTH * dt;
+      out.push(p);
+    }
+    return out;
+  }
+  const poseAt = (t) => {
+    const f = Math.max(0, Math.min(poses.length - 1, t * 8)), i = Math.floor(f), k = f - i, a = poses[i], b = poses[Math.min(i + 1, poses.length - 1)];
+    const o = {}; for (const key in a) o[key] = a[key] + (b[key] - a[key]) * k; return o;
+  };
+  const fov = (p) => 2 * Math.atan(Math.tan(25 * D2R) / Math.exp(p.zoom)) / D2R;
+
+
+  function draw() {
+    const t = video.currentTime || 0;
+    const cv = $('#set'), r = cv.getBoundingClientRect(), dpr = Math.min(2, devicePixelRatio || 1);
+    if (!r.width) return;
+    cv.width = r.width * dpr; cv.height = r.height * dpr;
+    const c = cv.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const w = r.width, h = r.height, k = w / 11.5, a = 34 * D2R;
+    const P = (x, y, z) => { const u = x * Math.cos(a) - (z - 4.2) * Math.sin(a), v = x * Math.sin(a) + (z - 4.2) * Math.cos(a); return [w * 0.5 + u * k, h * 0.74 - v * k * 0.4 - y * k * 0.62]; };
+    const line = (p, q) => { c.beginPath(); c.moveTo(...p); c.lineTo(...q); c.stroke(); };
+    const fwd = (p, L) => { const yw = p.yaw * D2R, pt = p.pitch * D2R; return [p.x + Math.sin(yw) * Math.cos(pt) * L, p.y + Math.sin(pt) * L, p.z + Math.cos(yw) * Math.cos(pt) * L]; };
+
+    c.lineWidth = 1; c.strokeStyle = 'rgba(28,31,36,0.07)';
+    for (let x = -7; x <= 7; x++) line(P(x, 0, -2), P(x, 0, 14));
+    for (let z = -2; z <= 14; z++) line(P(-7, 0, z), P(7, 0, z));
+    c.strokeStyle = 'rgba(28,31,36,0.42)';
+
+    const n = Math.min(poses.length - 1, Math.floor(t * 8));
+    const now = poseAt(t);
+    // ghost frustums every half second, like the frames in the app icon
+    for (let i = 0; i < n; i += 3) frustum(c, P, poses[i], fwd, 0.22 + 0.4 * (i / Math.max(1, n)), false);
+    // aim trail
+    c.setLineDash([4, 3]); c.lineWidth = 1.6; c.strokeStyle = 'rgba(94,106,210,0.75)'; c.beginPath();
+    for (let i = 0; i <= n; i++) { const q = P(...fwd(poses[i], AIM)); i ? c.lineTo(...q) : c.moveTo(...q); }
+    c.lineTo(...P(...fwd(now, AIM))); c.stroke(); c.setLineDash([]);
+    const tip = P(...fwd(now, AIM)); c.fillStyle = '#5e6ad2'; c.beginPath(); c.arc(...tip, 3, 0, 7); c.fill();
+    c.strokeStyle = 'rgba(94,106,210,0.25)'; line(P(now.x, now.y, now.z), tip);
+    // position trail
+    const s0 = P(poses[0].x, poses[0].y, poses[0].z); c.fillStyle = '#5e6ad2'; c.beginPath(); c.arc(...s0, 2.5, 0, 7); c.fill();
+    c.lineWidth = 2.5; c.strokeStyle = '#5e6ad2'; c.lineJoin = 'round'; c.beginPath();
+    for (let i = 0; i <= n; i++) { const q = P(poses[i].x, poses[i].y, poses[i].z); i ? c.lineTo(...q) : c.moveTo(...q); }
+    c.lineTo(...P(now.x, now.y, now.z)); c.stroke(); c.lineWidth = 1;
+    frustum(c, P, now, fwd, 1, true);
+  }
+  function frustum(c, P, p, fwd, alpha, live) {
+    const half = (fov(p) / 2) * D2R, L = live ? 3 : 2.2, yw = p.yaw * D2R;
+    const o = P(p.x, p.y, p.z);
+    const ray = (s) => { const pt = p.pitch * D2R; return P(p.x + Math.sin(yw + s * half) * L * Math.cos(pt), p.y + Math.sin(pt) * L, p.z + Math.cos(yw + s * half) * L * Math.cos(pt)); };
+    c.globalAlpha = alpha;
+    c.fillStyle = live ? 'rgba(94,106,210,0.14)' : 'rgba(94,106,210,0.05)'; c.strokeStyle = 'rgba(94,106,210,0.9)'; c.lineWidth = live ? 1.3 : 1;
+    c.beginPath(); c.moveTo(...o); c.lineTo(...ray(-1)); c.lineTo(...ray(1)); c.closePath(); c.fill(); c.stroke();
+    if (live) {
+      c.save(); c.translate(...o); c.rotate(p.roll * D2R); c.fillStyle = '#5e6ad2'; c.beginPath(); c.roundRect(-8, -5.5, 16, 11, 3); c.fill();
+      c.fillStyle = '#fff'; c.fillRect(-1, -5.5, 2, 3.5); c.restore();
+      c.strokeStyle = 'rgba(94,106,210,0.35)'; c.beginPath(); c.moveTo(...o); c.lineTo(...P(p.x, 0, p.z)); c.stroke();
+    }
+    c.globalAlpha = 1;
+  }
+
+  function load(id) {
+    clip = Motif.byId[id]; poses = integrate(clip.rows);
+    document.querySelectorAll('#picker button').forEach((b) => b.setAttribute('aria-pressed', b.dataset.id === id));
+    video.src = Motif.asset('clips/' + id + '.mp4');
+    if (!reduce) video.play().catch(() => {});
+    $('#reads').innerHTML = Motif.chipRow(clip).replace(/^<div class="chips">|<\/div>$/g, '');
+    $('#desc').textContent = clip.desc;
+    $('#fname').textContent = id + '.mp4';
+    const n = Math.round(SEG * 8);
+    graph.set({ tracks: [{ start: 0, end: n / 8, rows: clip.rows.slice(0, n) }], duration: SEG, bounds: clip.segs.slice(1).map((s) => s.a).filter((a) => a < SEG) });
+    draw();
+  }
+  /* Cycling: each clip plays once, then the next. A click on a tag (or scrub, or pause) takes over; cycling resumes after a quiet spell. */
+  function manual() {
+    auto = false; clearTimeout(resumeTimer);
+    document.querySelectorAll('#picker button').forEach((b) => b.style.removeProperty('--p'));
+    if (!reduce) resumeTimer = setTimeout(() => { auto = true; video.currentTime = 0; video.play().catch(() => {}); }, RESUME_MS);
+  }
+  function step() {
+    const t = video.currentTime || 0, end = Math.min(SEG, (video.duration || SEG) - 0.06);
+    if (t >= end || video.ended) {
+      if (auto) { const i = PICKS.findIndex(([id]) => id === clip.id); load(PICKS[(i + 1) % PICKS.length][0]); return; }
+      video.currentTime = 0; if (!reduce) video.play().catch(() => {});
+    }
+    const on = document.querySelector('#picker [aria-pressed="true"]');
+    if (on && auto) on.style.setProperty('--p', Math.min(100, (t / SEG) * 100).toFixed(1) + '%');
+  }
+  const paintUI = () => {
+    const t = video.currentTime || 0;
+    graph.setTime(t);
+    $('#clock').textContent = `${Math.min(t, SEG).toFixed(2)} / ${SEG.toFixed(1)} s`;
+    $('#play').innerHTML = Motif.icon(video.paused ? 'play' : 'pause');
+    $('#play').setAttribute('aria-label', video.paused ? 'Play' : 'Pause');
+  };
+  (function tick() { if (clip) { step(); draw(); paintUI(); } requestAnimationFrame(tick); })();
+  $('#play').addEventListener('click', () => { manual(); video.paused ? video.play() : video.pause(); });
+  $('#picker').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; manual(); load(b.dataset.id); });
+  addEventListener('keydown', (e) => { if (e.code === 'Space' && !e.target.closest('input,button,a')) { e.preventDefault(); $('#play').click(); } });
+  load('car_arc');
+</script>
+</body>
+</html>
